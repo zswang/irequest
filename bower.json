@@ -1,0 +1,24 @@
+{
+  "name": "irequest",
+  "version": "0.0.5",
+  "description": "request to class",
+  "keywords": [
+    "request",
+    "promise"
+  ],
+  "main": "lib/h5emitter.js",
+  "author": {
+    "name": "zswang",
+    "url": "http://weibo.com/zswang"
+  },
+  "ignore": [
+    "tests",
+    "src",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/components",
+    "test",
+    "tests"
+  ]
+}
