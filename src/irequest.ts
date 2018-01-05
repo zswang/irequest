@@ -1,5 +1,63 @@
 import * as request from 'request'
 
+/**
+ * 网络请求基类
+ *
+ * @example RequestBase:success
+  ```js
+  const rb = new irequest.RequestBase()
+
+  rb.request(`http://localhost:3030/api/user`).then(reply => {
+    console.log(JSON.stringify(reply))
+    // > {"name":"zswang","city":"beijing"}
+    // * done
+  })
+  ```
+ * @example RequestBase:parse error
+  ```js
+  const rb = new irequest.RequestBase()
+
+  rb.request(`http://localhost:3030/api/name`).then(reply => {
+  }).catch(err => {
+    console.log(err.status)
+    // > 400
+    // * done
+  })
+  ```
+ * @example RequestBase:parse error & debug
+  ```js
+  const rb = new irequest.RequestBase(true)
+
+  rb.request(`http://localhost:3030/api/name`).then(reply => {
+  }).catch(err => {
+    console.log(err.status)
+    // > 400
+    // * done
+  })
+  ```
+ * @example RequestBase:network error
+  ```js
+  const rb = new irequest.RequestBase()
+
+  rb.request(`http://localhost:3033/none`).then(reply => {
+  }).catch(err => {
+    console.log(err.status)
+    // > 500
+    // * done
+  })
+  ```
+ * @example RequestBase:network error & debug
+  ```js
+  const rb = new irequest.RequestBase(true)
+
+  rb.request(`http://localhost:3033/none`).then(reply => {
+  }).catch(err => {
+    console.log(err.status)
+    // > 500
+    // * done
+  })
+  ```
+ */
 export class RequestBase {
   debug: boolean
   constructor(debug: boolean) {
@@ -23,14 +81,13 @@ export class RequestBase {
           reject({
             status: 500,
             stack: ['<!--jdists encoding="md5">^linenum</jdists-->'],
-            desc: '网络错误',
+            desc: 'Network error.',
           })
           return
         }
         let reply
         try {
           reply = JSON.parse(body)
-          resolve(reply)
         } catch (ex) {
           if (this.debug) {
             console.log('^linenum err:', url, ex)
@@ -38,9 +95,11 @@ export class RequestBase {
           reject({
             status: 400,
             stack: ['<!--jdists encoding="md5">^linenum</jdists-->'],
-            desc: '数据解析错误',
+            desc: 'Data parsing error.',
           })
+          return
         }
+        resolve(reply)
       })
     })
   }

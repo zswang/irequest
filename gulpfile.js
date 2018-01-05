@@ -7,6 +7,8 @@ const gulp = require('gulp')
 const typescript = require('gulp-typescript')
 const linenum = require('gulp-linenum')
 const jdists = require('gulp-jdists')
+const examplejs = require('gulp-examplejs')
+const rename = require('gulp-rename')
 const merge2 = require('merge2')
 const pkg = require('./package')
 
@@ -29,4 +31,35 @@ gulp.task('build', function () {
   ])
 })
 
-gulp.task('dist', ['build'])
+gulp.task('example', function () {
+  return gulp.src([
+    `src/${pkg.name}.ts`
+  ])
+    .pipe(examplejs({
+      header: `
+global.${pkg.name} = require('../')
+const http = require('http')
+const server = http.createServer(function (req, res) {
+  switch (req.url) {
+    case '/api/user':
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.end(JSON.stringify({ name: 'zswang', city: 'beijing' }))
+      return
+    case '/api/name':
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.end('zswang')
+      return
+  }
+  res.writeHead(404)
+  res.end('Not Found')
+})
+server.listen(3030)
+      `
+    }))
+    .pipe(rename({
+      extname: '.js'
+    }))
+    .pipe(gulp.dest('test'))
+})
+
+gulp.task('dist', ['build', 'example'])

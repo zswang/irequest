@@ -13,13 +13,13 @@ $ npm install --save irequest
 
 ## Usage 使用方法
 
-### 绑定和触发事件 bind and trigger events
+### Bind and trigger events 绑定和触发事件
 
 ```js
-var rb = new irequest.RequestBase()
+const rb = new irequest.RequestBase()
 
-rb.request(`https://localhost:8080/api/user`).then((relpy) => {
-  console.log(relpy)
+rb.request(`http://localhost:3000/api/user`).then((reply) => {
+  console.log(reply)
 })
 ```
 
