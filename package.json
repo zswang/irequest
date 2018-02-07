@@ -1,6 +1,6 @@
 {
   "name": "irequest",
-  "version": "0.0.10",
+  "version": "0.0.14",
   "description": "request to class",
   "repository": {
     "type": "git",
@@ -12,7 +12,7 @@
     "test": "istanbul cover --hook-run-in-context node_modules/mocha/bin/_mocha -- -R spec",
     "example": "gulp example",
     "mocha": "mocha",
-    "dist": "npm run _update_version && npm run _dist"
+    "dist": "npm run _update_version && npm run _dist && npm run test"
   },
   "keywords": [
     "request",

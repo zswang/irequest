@@ -60,19 +60,19 @@ import * as request from 'request'
  */
 export class RequestBase {
   debug: boolean
-  constructor(debug: boolean) {
+  constructor(debug: boolean = false) {
     this.debug = debug
   }
   /**
    * 发起 HTTP 请求
    */
-  request(url: string, options?: request.UriOptions | request.CoreOptions): Promise<object> {
+  request(url: string, options: request.UriOptions | request.CoreOptions = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       request({
         ...{
           url: url
         },
-        ...(options || {}),
+        ...options,
       }, (err, res, body) => {
         if (err) {
           if (this.debug) {
