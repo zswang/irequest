@@ -69,9 +69,7 @@ export class RequestBase {
   request(url: string, options: request.UriOptions | request.CoreOptions = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       request({
-        ...{
-          url: url
-        },
+        url: url,
         ...options,
       }, (err, res, body) => {
         if (err) {
