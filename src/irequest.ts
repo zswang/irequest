@@ -1,5 +1,9 @@
 import * as request from 'request'
 
+export interface IParseJSON {
+  (text: string): any
+}
+
 /**
  * 网络请求基类
  *
@@ -10,6 +14,16 @@ import * as request from 'request'
   rb.request(`http://localhost:3030/api/user`).then(reply => {
     console.log(JSON.stringify(reply))
     // > {"name":"zswang","city":"beijing"}
+    // * done
+  })
+  ```
+* @example RequestBase:custom parse
+  ```js
+  const rb = new irequest.RequestBase()
+
+  rb.request(`http://localhost:3030/api/list`, {}, s => s.split(',')).then(reply => {
+    console.log(JSON.stringify(reply))
+    // > ["z","s","w","a","n","g"]
     // * done
   })
   ```
@@ -66,39 +80,50 @@ export class RequestBase {
   /**
    * 发起 HTTP 请求
    */
-  request(url: string, options: request.UriOptions | request.CoreOptions = {}): Promise<any> {
+  request(
+    url: string,
+    options: request.UriOptions | request.CoreOptions = {},
+    parse?: IParseJSON
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
-      request({
-        url: url,
-        ...options,
-      }, (err, res, body) => {
-        if (err) {
-          if (this.debug) {
-            console.log('^linenum err:', url, err)
+      request(
+        {
+          url: url,
+          ...options,
+        },
+        (err, res, body) => {
+          if (err) {
+            if (this.debug) {
+              console.log('^linenum err:', url, err)
+            }
+            reject({
+              status: 500,
+              stack: ['<!--jdists encoding="md5">^linenum</jdists-->'],
+              desc: 'Network error.',
+            })
+            return
           }
-          reject({
-            status: 500,
-            stack: ['<!--jdists encoding="md5">^linenum</jdists-->'],
-            desc: 'Network error.',
-          })
-          return
-        }
-        let reply
-        try {
-          reply = JSON.parse(body)
-        } catch (ex) {
-          if (this.debug) {
-            console.log('^linenum err:', url, ex)
+          let reply
+          try {
+            if (parse) {
+              reply = parse(body)
+            } else {
+              reply = JSON.parse(body)
+            }
+          } catch (ex) {
+            if (this.debug) {
+              console.log('^linenum err:', url, ex)
+            }
+            reject({
+              status: 400,
+              stack: ['<!--jdists encoding="md5">^linenum</jdists-->'],
+              desc: 'Data parsing error.',
+            })
+            return
           }
-          reject({
-            status: 400,
-            stack: ['<!--jdists encoding="md5">^linenum</jdists-->'],
-            desc: 'Data parsing error.',
-          })
-          return
+          resolve(reply)
         }
-        resolve(reply)
-      })
+      )
     })
   }
 }

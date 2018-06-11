@@ -11,6 +11,10 @@ const server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/plain' })
       res.end('zswang')
       return
+    case '/api/list':
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.end('z,s,w,a,n,g')
+      return
   }
   res.writeHead(404)
   res.end('Not Found')
@@ -35,6 +39,17 @@ describe("src/irequest.ts", function () {
   rb.request(`http://localhost:3030/api/user`).then(reply => {
     examplejs_print(JSON.stringify(reply))
     assert.equal(examplejs_printLines.join("\n"), "{\"name\":\"zswang\",\"city\":\"beijing\"}"); examplejs_printLines = [];
+    done();
+  })
+  });
+          
+  it("RequestBase:custom parse", function (done) {
+    examplejs_printLines = [];
+  const rb = new irequest.RequestBase()
+
+  rb.request(`http://localhost:3030/api/list`, {}, s => s.split(',')).then(reply => {
+    examplejs_print(JSON.stringify(reply))
+    assert.equal(examplejs_printLines.join("\n"), "[\"z\",\"s\",\"w\",\"a\",\"n\",\"g\"]"); examplejs_printLines = [];
     done();
   })
   });

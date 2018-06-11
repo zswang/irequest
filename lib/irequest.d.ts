@@ -1,5 +1,8 @@
 /// <reference types="request" />
 import * as request from 'request';
+export interface IParseJSON {
+    (text: string): any;
+}
 /**
  * 网络请求基类
  *
@@ -9,6 +12,15 @@ import * as request from 'request';
   rb.request(`http://localhost:3030/api/user`).then(reply => {
     console.log(JSON.stringify(reply))
     // > {"name":"zswang","city":"beijing"}
+    // * done
+  })
+  ```
+* @example RequestBase:custom parse
+  ```js
+  const rb = new irequest.RequestBase()
+  rb.request(`http://localhost:3030/api/list`, {}, s => s.split(',')).then(reply => {
+    console.log(JSON.stringify(reply))
+    // > ["z","s","w","a","n","g"]
     // * done
   })
   ```
@@ -59,5 +71,5 @@ export declare class RequestBase {
     /**
      * 发起 HTTP 请求
      */
-    request(url: string, options?: request.UriOptions | request.CoreOptions): Promise<any>;
+    request(url: string, options?: request.UriOptions | request.CoreOptions, parse?: IParseJSON): Promise<any>;
 }

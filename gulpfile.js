@@ -12,31 +12,36 @@ const rename = require('gulp-rename')
 const merge2 = require('merge2')
 const pkg = require('./package')
 
-gulp.task('build', function () {
-  var tsResult = gulp.src('./src/*.ts')
-    .pipe(linenum({
-      prefix: `${pkg.name}/src/index.ts:`
-    }))
+gulp.task('build', function() {
+  var tsResult = gulp
+    .src('./src/*.ts')
+    .pipe(
+      linenum({
+        prefix: `${pkg.name}/src/index.ts:`,
+      })
+    )
     .pipe(jdists())
     .pipe(gulp.dest('./lib'))
-    .pipe(typescript({
-      module: 'commonjs',
-      target: 'es2015',
-      declaration: true,
-    }))
+    .pipe(
+      typescript({
+        module: 'commonjs',
+        target: 'es2015',
+        declaration: true,
+      })
+    )
 
   return merge2([
     tsResult.dts.pipe(gulp.dest('./lib')),
-    tsResult.js.pipe(gulp.dest('./lib'))
+    tsResult.js.pipe(gulp.dest('./lib')),
   ])
 })
 
-gulp.task('example', function () {
-  return gulp.src([
-    `src/${pkg.name}.ts`
-  ])
-    .pipe(examplejs({
-      header: `
+gulp.task('example', function() {
+  return gulp
+    .src([`src/${pkg.name}.ts`])
+    .pipe(
+      examplejs({
+        header: `
 global.${pkg.name} = require('../')
 const http = require('http')
 const server = http.createServer(function (req, res) {
@@ -49,16 +54,23 @@ const server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'text/plain' })
       res.end('zswang')
       return
+    case '/api/list':
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.end('z,s,w,a,n,g')
+      return
   }
   res.writeHead(404)
   res.end('Not Found')
 })
 server.listen(3030)
-      `
-    }))
-    .pipe(rename({
-      extname: '.js'
-    }))
+      `,
+      })
+    )
+    .pipe(
+      rename({
+        extname: '.js',
+      })
+    )
     .pipe(gulp.dest('test'))
 })
 

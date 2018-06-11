@@ -1,4 +1,7 @@
 import * as request from 'request'
+export interface IParseJSON {
+  (text: string): any
+}
 /**
  * 网络请求基类
  *
@@ -8,6 +11,15 @@ import * as request from 'request'
   rb.request(`http://localhost:3030/api/user`).then(reply => {
     console.log(JSON.stringify(reply))
     // > {"name":"zswang","city":"beijing"}
+    // * done
+  })
+  ```
+* @example RequestBase:custom parse
+  ```js
+  const rb = new irequest.RequestBase()
+  rb.request(`http://localhost:3030/api/list`, {}, s => s.split(',')).then(reply => {
+    console.log(JSON.stringify(reply))
+    // > ["z","s","w","a","n","g"]
     // * done
   })
   ```
@@ -60,39 +72,50 @@ export class RequestBase {
   /**
    * 发起 HTTP 请求
    */
-  request(url: string, options: request.UriOptions | request.CoreOptions = {}): Promise<any> {
+  request(
+    url: string,
+    options: request.UriOptions | request.CoreOptions = {},
+    parse?: IParseJSON
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
-      request({
-        url: url,
-        ...options,
-      }, (err, res, body) => {
-        if (err) {
-          if (this.debug) {
-            console.log('irequest/src/index.ts:77 err:', url, err)
+      request(
+        {
+          url: url,
+          ...options,
+        },
+        (err, res, body) => {
+          if (err) {
+            if (this.debug) {
+              console.log('irequest/src/index.ts:97 err:', url, err)
+            }
+            reject({
+              status: 500,
+              stack: ['98281d86f415da59ef7dfb4d749aba59'],
+              desc: 'Network error.',
+            })
+            return
           }
-          reject({
-            status: 500,
-            stack: ['bb17a7ca42d10965843af36542e44e4d'],
-            desc: 'Network error.',
-          })
-          return
-        }
-        let reply
-        try {
-          reply = JSON.parse(body)
-        } catch (ex) {
-          if (this.debug) {
-            console.log('irequest/src/index.ts:91 err:', url, ex)
+          let reply
+          try {
+            if (parse) {
+              reply = parse(body)
+            } else {
+              reply = JSON.parse(body)
+            }
+          } catch (ex) {
+            if (this.debug) {
+              console.log('irequest/src/index.ts:115 err:', url, ex)
+            }
+            reject({
+              status: 400,
+              stack: ['f00938cbc8adde0ad013bb85acc08ec3'],
+              desc: 'Data parsing error.',
+            })
+            return
           }
-          reject({
-            status: 400,
-            stack: ['018c068b3d50c538a9415a44101863db'],
-            desc: 'Data parsing error.',
-          })
-          return
+          resolve(reply)
         }
-        resolve(reply)
-      })
+      )
     })
   }
 }
