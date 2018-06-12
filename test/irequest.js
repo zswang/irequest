@@ -1,26 +1,7 @@
 
 global.irequest = require('../')
-const http = require('http')
-const server = http.createServer(function (req, res) {
-  switch (req.url) {
-    case '/api/user':
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.end(JSON.stringify({ name: 'zswang', city: 'beijing' }))
-      return
-    case '/api/name':
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.end('zswang')
-      return
-    case '/api/list':
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.end('z,s,w,a,n,g')
-      return
-  }
-  res.writeHead(404)
-  res.end('Not Found')
-})
-server.listen(3030)
-      
+require('./mock/')
+
 
 describe("src/irequest.ts", function () {
   var assert = require('should');
